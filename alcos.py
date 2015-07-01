@@ -15,7 +15,7 @@ class Alcos():
     def get_owner_public_key(self):
         ##If no transaction ever happened then the creator
         ##of the alcos is the owner
-        if len(self.transaction) == 0:
+        if len(self.transactions) == 0:
             return self.creator_public_key
         ##If a transaction happen, the receiver of the
         ##last transaction is the owner:
@@ -26,10 +26,10 @@ class Alcos():
     ##Check that all of the transaction since the creation of
     ##the alcos are correctly signed
     def check_integrity(self):
-        ##Check that the advertised owner created the alcos
-        original_owner = self.creator_public_key
-        if verify(self.promise,self.promise_signature,original_owner):
-            self.recursive_check(original_owner,0)
+        ##Check that the advertised creator created the alcos
+        creator = self.creator_public_key
+        if verify(self.promise,self.promise_signature,creator):
+            self.recursive_check(creator,0)
         else:
             print "The advertised owner did not create the file"
             return False
@@ -68,9 +68,14 @@ class Alcos():
     def  offer(self, owner_private_key, receiver_public_key):
         ##Initialize new transaction
         possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
-        possible_transaction.offer_transaction(owner_public_key) 
+        possible_transaction.offer_transaction(owner_private_key) 
         ##Add it to the list of transactions 
         self.transactions.append(possible_transaction)
+    
+    ##Put the second signature on an alcos that was offered you from the owner
+    def accept(self,receiver_private_key):
+        last_transaction = self.transactions[-1]
+        last_transaction.accept_offered_transaction(receiver_private_key)   
 
     def is_offered():
         last_transaction = self.transactions[-1]

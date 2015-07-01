@@ -14,3 +14,17 @@ def setup():
     ascii_armored_public_keys = gpg.export_keys(keyids)
 
 setup()
+
+
+
+
+def sign(message,private_key):
+    print message + " signed with my private key: "+private_key
+    return  message + " signed with my private key: "+private_key    
+
+
+def verify(promise, promise_signature, original_owner):
+    print "---"
+    print promise_signature
+    print "The promise " + promise + " was signed by " +  original_owner 
+    return True
