@@ -1,4 +1,3 @@
-import pickle
 from transactions import *
 from utils import *
 
@@ -80,6 +79,14 @@ class Alcos():
     def is_offered():
         last_transaction = self.transactions[-1]
         return last_transaction.is_offer()
+
+    ##Store this alcos as a pickle file at path
+    def to_file(path):
+        store(self, path)
+    
+    ##Obtain a string that can be used to represent this alcos
+    def to_string(self):
+       object_to_string(self) 
 
 
 
