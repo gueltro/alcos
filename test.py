@@ -37,7 +37,7 @@ print offer_transaction.receiver_signature
 print "---"
 print "Test acceptance protocol"
 alcos.accept(receiver_private_key)
-
+print "--"
 print "Test received transaction"
 
 offer_transaction = alcos.transactions[0]
@@ -48,4 +48,8 @@ print offer_transaction.sinthesis
 print offer_transaction.sender_signature
 print offer_transaction.receiver_signature
 
-
+store(alcos,"alcos")
+alcos_string = object_to_string(alcos)
+print alcos
+print alcos_string
+print string_to_object(alcos_string)
