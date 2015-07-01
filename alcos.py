@@ -1,4 +1,5 @@
 import pickle
+from transactions import *
 from utils import *
 
 class Alcos():
@@ -9,6 +10,7 @@ class Alcos():
             self.promise_signature = promise_signature
             self.creator_public_key = creator_public_key
             self.transactions = []
+
  
     def get_owner_public_key(self):
         ##If no transaction ever happened then the creator
@@ -60,41 +62,19 @@ class Alcos():
         new_owner = this_receiver
         return self.recursive_check(new_owner, checked_transactions + 1)
 
+    ##Used to offer the alcos to someone: create a new transaction and 
+    ##sign it as a sender with your private_key. At this point the
+    ##transaction is incomplete, (in the sense that possible_transaction.receiver_signature == 0)
+    def  offer(self, owner_private_key, receiver_public_key):
+        ##Initialize new transaction
+        possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
+        possible_transaction.offer_transaction(owner_public_key) 
+        ##Add it to the list of transactions 
+        self.transactions.append(possible_transaction)
+
+    def is_offered():
+        last_transaction = self.transactions[-1]
+        return last_transaction.is_offer()
 
 
-class Transaction():
 
-    def __init(self,alcos_name,sender_public_key,receiver_public_key):
-        self.alcos_name = alcos_name
-        self.sender_public_key = sender_public_key
-        self.receiver_public_key = receiver_public_key
-        self.sinthesis = alcos_name + "|" + hash(sender_public_key) + "|" + hash(receiver_public_key)
-        self.sender_signature = None
-        self.receiver_signature = None
-
-
-    ##Utils to propose a transaction to someone, and for that someone to accept 
-    def propose_transaction(sender_private_key):
-        self.sender_signature = sign(self.sinthesis, sender_public_key)
-
-    def accept_proposed_transaction(receiver_private_key):
-        if self.sender_signature != None:
-            print "This transaction was not proposed by anyone. Nothing happens"
-        if verify(self.tag, self.sender_signature,self.sender_public_key):
-            self.receiver_signature = sign(self.sinthesis, receiver_private_key)
-        else:
-            print "This transaction was not signed correctly. Nothing happens"
-
-    ##Utils to request a transaction from someone, and for that someone to accpet 
-    def request_transaction(receiver_private_key):
-        self.receiver_signature = sign(self.sinthesis, receiver_private_key)
-
-    def accept_requested_transaction(sender_private_key):
-        if self.sender_signature != None:
-            print "This transaction was not proposed by anyone. Nothing happens"
-        if verify(self.tag, self.sender_signature,self.sender_public_key):
-            self.receiver_signature = sign(self.sinthesis, receiver_public_key)
-        else:
-            print "This transaction was not signed correctly. Nothing happens"
-
-    
