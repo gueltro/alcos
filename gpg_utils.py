@@ -2,7 +2,7 @@ import gnupg
 from os.path import expanduser
 
 
-def setup():
+def gpg_setup():
     home = expanduser("~")
     gpg = gnupg.GPG(gnupghome=home)
     gpg.encoding = 'utf-8'

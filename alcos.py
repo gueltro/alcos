@@ -1,6 +1,14 @@
 from transactions import *
 from utils import *
 
+
+##An alcos is a just  a cryptographic promise. The creator of the alcos 
+##promise that it will give something (dollars, beer, food, stamps..) to
+##the owner of the alcos. The owner of the alcos can be changed if the 
+##current owner signs a transaction where it declare that he gives the 
+##alcos to someone else.
+
+
 class Alcos():
 
     def  __init__(self, promise, promise_signature, creator_public_key):
@@ -64,7 +72,7 @@ class Alcos():
     ##Used to offer the alcos to someone: create a new transaction and 
     ##sign it as a sender with your private_key. At this point the
     ##transaction is incomplete, (in the sense that possible_transaction.receiver_signature == 0)
-    def  offer(self, owner_private_key, receiver_public_key):
+    def offer(self, owner_private_key, receiver_public_key):
         ##Initialize new transaction
         possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
         possible_transaction.offer_transaction(owner_private_key) 
@@ -75,7 +83,8 @@ class Alcos():
     def accept(self,receiver_private_key):
         last_transaction = self.transactions[-1]
         last_transaction.accept_offered_transaction(receiver_private_key)   
-
+    
+    ##Check if this alcos is offered to someone
     def is_offered():
         last_transaction = self.transactions[-1]
         return last_transaction.is_offer()
@@ -87,6 +96,4 @@ class Alcos():
     ##Obtain a string that can be used to represent this alcos
     def to_string(self):
        object_to_string(self) 
-
-
 
