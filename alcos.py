@@ -72,17 +72,17 @@ class Alcos():
     ##Used to offer the alcos to someone: create a new transaction and 
     ##sign it as a sender with your private_key. At this point the
     ##transaction is incomplete, (in the sense that possible_transaction.receiver_signature == 0)
-    def offer(self, owner_private_key, receiver_public_key):
+    def offer(self, owner_id, owner_gpg, receiver_public_key):
         ##Initialize new transaction
         possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
-        possible_transaction.offer_transaction(owner_private_key) 
+        possible_transaction.offer_transaction(sender_id, sender_gpg) 
         ##Add it to the list of transactions 
         self.transactions.append(possible_transaction)
     
     ##Put the second signature on an alcos that was offered you from the owner
-    def accept(self,receiver_private_key):
+    def accept(self,receiver_id,receiver_gpg):
         last_transaction = self.transactions[-1]
-        last_transaction.accept_offered_transaction(receiver_private_key)   
+        last_transaction.accept_offered_transaction(receiver_id, receiver_gpg)   
     
     ##Check if this alcos is offered to someone
     def is_offered():

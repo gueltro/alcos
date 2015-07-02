@@ -17,14 +17,19 @@ setup()
 
 
 
+##A signer can use this to sign a message with his
+##GPG key
+def sign(message, signer_id, signer_gpg):
+    signed_data = signer_gpg.sign(message)
+    print message + " signed with my private key: " + private_key
+    return signed_data
+    
 
-def sign(message,private_key):
-    print message + " signed with my private key: "+private_key
-    return  message + " signed with my private key: "+private_key    
 
-
-def verify(promise, promise_signature, original_owner):
+def verify(promise, promise_signature, verifier_gpg, original_owner):
     print "---"
+    print promise
     print promise_signature
-    print "The promise " + promise + " was signed by " +  original_owner 
-    return True
+    print original_owner
+    return verifier_gpg.verify(promise_signature)
+
