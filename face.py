@@ -1,6 +1,5 @@
 from alcos import *
 
-
 ##The face is the part of your identity that everyone can see (as the name suggests)
 ##It is composed of your public key and the list of all the alcos that you have exchanged
 ##in the past. 
@@ -17,11 +16,9 @@ from alcos import *
 ##sometimes, for example if you suspect that the other party may discover of your past
 ##misbehaviour anyway.
 
-
-
 class Face():
     
-    def __init__(public_key):
+    def __init__(self, public_key):
         self.public_key = public_key
         self.past = []
     
@@ -38,7 +35,7 @@ class Face():
         for alcos in self.past:
             if not alcos.check_integrity():
                 return False
-         return True
+        return True
 
     ##Put the second signature on an alcos that was offered you from the owner
     def accept(self,receiver_private_key):

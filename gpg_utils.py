@@ -7,7 +7,7 @@ def gpg_setup(home = expanduser("~") + "/.alcos" ):
     return gpg
 
 ##Import new gpg_keys
-def import_gpg_keys(gpg,data):
+def import_gpg_keys_from_string(gpg,data):
     gpg.import_keys(data)
 
 ##Interactivley create a gpg_identity
@@ -16,20 +16,30 @@ def create_gpg_keys(gpg, params):
 #    key_params = gpg.gen_key_input(name_real="giulio", key_type="RSA", key_length=1024)
    gpg.gen_key(key_params)
 
-
 ##A signer can use this to sign a message with his
 ##GPG key
 def sign(message, signer_id, signer_gpg):
-    signed_data = signer_gpg.sign(message)
-    print message + " signed with my private key: " + private_key
+    signed_data = signer_gpg.sign(message,keyid = signer_id)
+    print message + " signed with my identity: " + signer_id  
     return signed_data
     
-def verify(promise, promise_signature, verifier_gpg, original_owner):
-    print "---"
-    print promise
-    print promise_signature
-    print original_owner
-    return verifier_gpg.verify(promise_signature)
+def verify(message, message_signature,  signer_public_key):
+    ##Temporary gpg profile used to verify without needing an identity 
+    temp_gpg = gpg_setup("/tmp/" + str(hash(signer_public_key)))
+    import_gpg_keys_from_string(temp_gpg,signer_public_key)
+    signer_fingerprint = temp_gpg.list_keys()[0]["fingerprint"]
+
+    is_valid_signature =  temp_gpg.verify(message_signature.data)
+    signature_fingerprint = is_valid_signature.fingerprint
+
+    if is_valid_signature and (signature_fingerprint == signer_fingerprint):
+        print "Signature for following promise was correct: "
+        print message
+        return True
+    else:
+        print "Signature for following promise was compromised: "
+        print message
+        return False
 
 ##Utils for interactive setup. Maybe in the future this will be done with the cli-interface
 def gpg_interactive_setup():
@@ -60,5 +70,3 @@ def keys_interactive_setup(new_gpg):
     new_identity["key_length"] = "1024"
     
     create_gpg_keys(new_gpg, new_identity)
-     
-
