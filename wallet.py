@@ -62,7 +62,7 @@ class Wallet():
     ##offer_with file
     def offer_alcos(self,alcos,receiver_public_key):
         past = self.get_past()
-        alcos_owner_key = alcos.get_owner_public_key()
+        alcos_owner_public_key = alcos.get_owner_public_key()
         wallet_owner_public_key = self.get_my_public_key() 
         ##TODO add check that receiver is in my known contact
 
@@ -70,7 +70,8 @@ class Wallet():
             print "alcos " + str(alcos) + "was added to your past"
             self.add_alcos_to_past(alcos)
 
-        if (alcos_owner_key != wallet_owner_public_key):
+
+        if (alcos_owner_public_key != wallet_owner_public_key):
             print "This alcos is not yours. Nothing will happen"
             return
 

@@ -38,6 +38,8 @@ gpg = gpg_interactive_setup()
 wallet = Wallet(gpg, "rigsby")
 wallet.to_file("walletr")
 """
+
+"""
 walletg = load("walletg")
 walletr = load("walletr")
 
@@ -49,7 +51,7 @@ print "alcos created"
 print ""
 walletg.offer_alcos(new_alcos, rigsby_public_key)
 
-"""
+
 offer_transaction =  new_alcos.transactions[0]
 e()
 print "details about offer transaction"
@@ -58,10 +60,10 @@ print offer_transaction.sinthesis
 e()
 print offer_transaction.sendr_signature
 print offer_transaction.receiver_signature
-"""
 
 
-##Test to receive an alcos
+
+##Test to receive an alcos (success)
 
 print ""
 print "Before rigsby acceptinhg"
@@ -74,4 +76,30 @@ alcos_received =  walletr.get_past()[0]
 print alcos_received
 alcos_received.transactions[-1].sender_signature
 alcos_received.transactions[-1].receiver_signature
+
+walletr.to_file("walletr")
+
+
+
+
+
+gpg = gpg_interactive_setup()
+wallet = Wallet(gpg, "jad")
+wallet.to_file("walletj")
+"""
+
+walletr = load("walletr")
+walletg = load("walletg")
+walletj = load("walletj")
+
+##Rigsby's point of view 
+jad_public_key = walletj.get_my_public_key() 
+alcos_offered =  walletr.get_past()[0]
+walletr.offer_alcos(alcos_offered, jad_public_key)
+
+##jad's point of view
+walletj.accept_alcos(alcos_offered)
+
+print walletj.get_past()[0].get_owner_public_key()
+print walletj.get_my_public_key()
 

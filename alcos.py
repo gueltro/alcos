@@ -22,7 +22,7 @@ class Alcos():
     ##where final_transaction is an integer that represents
     ##the position of the last transaction  
 
-    def get_owner_public_key(self, final_transaction = -1):
+    def get_owner_public_key(self, final_transaction = None):
         ##If no transaction ever happened then the creator
         ##of the alcos is the owner
         if len(self.transactions) == 0:
@@ -33,9 +33,13 @@ class Alcos():
         ##Hack to make sure that final_trasaction is in range
         ##TODO remove with genesis transactions
         final_transaction = min(final_transaction,len(self.transactions))
-        if final_transaction < 0:
+        if final_transaction == None:
+            final_transaction = len(self.transactions) -1
+        if len(self.transactions) == 0:
             return self.creator_public_key
-        
+
+
+
         last_transaction = self.transactions[final_transaction]
         return last_transaction.receiver_public_key
     
@@ -89,7 +93,7 @@ class Alcos():
             print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the receiver"
             return False
         
-        new_owner = this_receiver
+        new_owner = this_receiver_public_key
         return self.recursive_check(new_owner, checked_transactions + 1, final_transaction)
 
     ##Used to offer the alcos to someone: create a new transaction and 
@@ -110,6 +114,7 @@ class Alcos():
         last_transaction.accept_offered_transaction(receiver_id, receiver_gpg)   
     
     ##Check if this alcos is offered to someone
+    ##TODO debug since the result is right but the print statement are misleading
     def is_valid_offer(self):
         transaction_length =  len(self.transactions)
         ##If this alcos was never involved in any transaction, for sure it was not offered
@@ -125,9 +130,8 @@ class Alcos():
         ##Is the person that is offering you the alcos 
         ##the owner of the alcos?
         
-        last_receiver = self.get_owner_public_key(-2)
+        last_receiver = self.get_owner_public_key(len(self.transactions)-2)
         last_sender = self.transactions[transaction_length - 1].sender_public_key
-
 
         if not  last_receiver == last_sender:
             print "The sender of this alcos is not the legitimate older"
