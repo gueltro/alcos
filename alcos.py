@@ -8,6 +8,9 @@ from utils import *
 ##current owner signs a transaction where it declare that he gives the 
 ##alcos to someone else.
 
+##This creates a chain of trust from the orignal issuer of the alcos 
+##to all of the people that use that alcos as a means of exchange.
+
 
 class Alcos():
 
@@ -23,24 +26,17 @@ class Alcos():
     ##the position of the last transaction  
 
     def get_owner_public_key(self, final_transaction = None):
-        ##If no transaction ever happened then the creator
-        ##of the alcos is the owner
-        if len(self.transactions) == 0:
-            return self.creator_public_key
-        ##If a transaction happen, the receiver of the
-        ##last transaction is the owner:
 
-        ##Hack to make sure that final_trasaction is in range
-        ##TODO remove with genesis transactions
-        final_transaction = min(final_transaction,len(self.transactions))
         if final_transaction == None:
-            final_transaction = len(self.transactions) -1
-        if len(self.transactions) == 0:
-            return self.creator_public_key
+            final_transaction = len(self.transactions)
 
+        assert (0 <= final_transaction) and (final_transaction <= len(self.transactions)),\
+            "The time of the ownership is out of range. No owner at that time"
 
+        if final_transaction == 0:
+            return  self.creator_public_key 
 
-        last_transaction = self.transactions[final_transaction]
+        last_transaction = self.transactions[final_transaction-1]
         return last_transaction.receiver_public_key
     
     ##Check that all of the transaction since the creation of
@@ -53,7 +49,7 @@ class Alcos():
        
         ##Hack to escape the fact that self can't be referenced in arguments, i.e
         ##def check_integrity(self, final_transaction = len(self.transactions)):
-        ##NameError: name 'self' is not defined
+        ##NameError: name 'self' is not defined (TODO find a cleaner way to do this)
         if final_transaction == None:
             final_transaction = len(self.transactions)
         ##Hack to make sure that final_trasaction is in range 
@@ -67,12 +63,12 @@ class Alcos():
 
     def recursive_check(self, old_owner_public_key, checked_transactions, final_transaction):
 
-
         ##We checked all of the transactions, and the alcos is valid
         if final_transaction == checked_transactions:
             print "The alcos is valid"
             return True
-        
+
+        #Collect parmether of the transaction 
         this_transaction = self.transactions[checked_transactions]
         this_sinthesis = this_transaction.sinthesis 
         this_sender_public_key = this_transaction.sender_public_key
@@ -109,33 +105,37 @@ class Alcos():
     
     ##Put the second signature on an alcos that was offered you from the owner
     def accept(self,receiver_id,receiver_gpg):
-        print "Captain, here it seems allright. Can you hear me XXX"
         last_transaction = self.transactions[-1]
         last_transaction.accept_offered_transaction(receiver_id, receiver_gpg)   
     
     ##Check if this alcos is offered to someone
-    ##TODO debug since the result is right but the print statement are misleading
     def is_valid_offer(self):
         transaction_length =  len(self.transactions)
         ##If this alcos was never involved in any transaction, for sure it was not offered
         if transaction_length == 0:
             return False
-
+        
 
         if not self.check_integrity(transaction_length -1):
             print "The history of this alcos is corrupted"
             return False
-
+        
 
         ##Is the person that is offering you the alcos 
         ##the owner of the alcos?
-        
-        last_receiver = self.get_owner_public_key(len(self.transactions)-2)
-        last_sender = self.transactions[transaction_length - 1].sender_public_key
+        if transaction_length == 1:
+            owner = self.creator_public_key
+            sender = self.transactions[0].sender_public_key
+            if not owner == sender:
+                return False
 
-        if not  last_receiver == last_sender:
-            print "The sender of this alcos is not the legitimate older"
-            return False
+        if transaction_length > 1:
+            last_receiver = self.get_owner_public_key(transaction_length - 1)
+            last_sender = self.transactions[transaction_length - 1].sender_public_key
+        
+            if not  last_receiver == last_sender:
+                return False
+        
 
         last_transaction = self.transactions[-1]
         return last_transaction.is_valid_offer()
@@ -147,4 +147,3 @@ class Alcos():
     ##Obtain a string that can be used to represent this alcos
     def to_string(self):
        object_to_string(self) 
-

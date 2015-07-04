@@ -70,7 +70,6 @@ class Wallet():
             print "alcos " + str(alcos) + "was added to your past"
             self.add_alcos_to_past(alcos)
 
-
         if (alcos_owner_public_key != wallet_owner_public_key):
             print "This alcos is not yours. Nothing will happen"
             return
@@ -90,32 +89,52 @@ class Wallet():
         past = self.get_past()
         last_transaction = alcos.transactions[-1]
 
-        alcos_owner_public_key = alcos.get_owner_public_key()
+        alcos_owner_public_key = alcos.get_owner_public_key(len(alcos.transactions) -1)
         wallet_owner_public_key = self.get_my_public_key()
         sender_public_key = last_transaction.sender_public_key
         receiver_key = last_transaction.receiver_public_key
+
 
 
         if (alcos not in past):
             print "alcos " + str(alcos) + "was added to your past"
             self.add_alcos_to_past(alcos)
             
+        assert (alcos.is_valid_offer()),\
+            "This alcos is not a valid offer, nothing happens." 
+        
+        assert (alcos_owner_public_key == sender_public_key),\
+            "The person that sent you this alcos is not the legitimate owner of this alcos"
 
-        if  not (alcos.is_valid_offer()): 
-            print "This alcos is not a valid offer, nothing happens." 
-            return  
-
-        if (alcos_owner_public_key != sender_public_key):
-            print "The person that sent you this alcos is not the legitimate owner of this alcos"
-            return
-
-        if (wallet_owner_public_key != receiver_key):
-            print "This alcos was not sent to you, therefore you can not accept it"
-            return
+        assert (wallet_owner_public_key == receiver_key),\
+            "This alcos was not sent to you, therefore you can not accept it"
 
         alcos.accept(self.key_id, self.gpg)
 
-    
+
+    def get_issued_promises(self):
+        past = self.face.past
+        creator_public_key = self.get_my_public_key()
+        issued_promises = [alcos.promise for alcos in past if alcos.creator_public_key == creator_public_key]
+        return issued_promises 
+
+    def show_issued_promises(self):
+        print str(self.key_id) + " issued the following promises:"
+        issued_promises = self.get_issued_promises()
+        for promise in issued_promises:
+            print promise
+
+    def get_owed_promises(self):
+        past = self.face.past
+        issued_promises = [alcos.promise for alcos in past if alcos.get_owner_public_key() == self.get_my_public_key()]
+        return issued_promises 
+
+    def show_owed_promises(self):
+        print str(self.key_id) +  " is owed the following promises:"
+        owed_promises = self.get_owed_promises()
+        for promise in owed_promises:
+            print promise
+
     ##Get the list of all past alcos from the face
     def get_past(self):
         return self.face.past

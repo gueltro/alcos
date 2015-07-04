@@ -3,14 +3,25 @@ Make a cryptographyc promise to your friends and peers.
 
 This is a python wrapper for pgp, that allows people to make promises and sign them with their PGP keys.
 
+
+
+
+-- Work in progress -- 
+
+
 Usefull manual for gpg 
 
 https://www.gnupg.org/gph/en/manual/c14.html
 
 python gnupg documentation:
 
+
 https://pythonhosted.org/python-gnupg/
+
+
+
 My PGP key:
+
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1

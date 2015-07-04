@@ -1,105 +1,102 @@
 from gpg_utils  import *
 from wallet import *
 
-##Test to create wallet (success)
+##Test to exchange alcos in a small community formed by Giulio, Jad, and Rigsby. 
 """
+##Wallet setup
 gpg = gpg_interactive_setup()
-wallet = Wallet(gpg, "giulio")
-wallet.to_file("walleta")
-"""
-
-##test to load wallet (success)
-#wallet = load("mywallet")
-"""
-print wallet.get_my_public_key()
-print wallet.get_my_private_key()
-
-##Test to create an alcos (success) 
-wallet.create_alcos("I will give a banana to the owner of this alcos")
-new_alcos  = wallet.face.past[0]
-
-print new_alcos.name
-print new_alcos.promise
-print new_alcos.promise_signature
-print new_alcos.creator_public_key
-print new_alcos.transactions
-if verify(new_alcos.promise,new_alcos.promise_signature,wallet.gpg,"ds"):
-    print "Verification went ok"
-else:
-    print "Verification failed horribly"
-"""
-##Test to offer an alcos (success) 
-"""
-gpg = gpg_interactive_setup()
-wallet = Wallet(gpg, "giulio")
-wallet.to_file("walletg")
+walletg = Wallet(gpg, "giulio")
+walletg.to_file("bank/walletg")
 
 gpg = gpg_interactive_setup()
-wallet = Wallet(gpg, "rigsby")
-wallet.to_file("walletr")
+walletj = Wallet(gpg, "jad")
+walletj.to_file("bank/walletj")
+
+gpg = gpg_interactive_setup()
+walletr = Wallet(gpg, "rigsby")
+walletr.to_file("bank/walletr")
 """
 
-"""
-walletg = load("walletg")
-walletr = load("walletr")
+def line(message = ""):
+    print "---"
+    print message
+    print "---"
 
-walletg.create_alcos("I will give a beer to the owner of this alcos ")
-new_alcos =  walletg.get_past()[-1]
+print "Welcome to the first virtual community that will do business using alcos!!"
+
+walletj = load("bank/walletj")
+walletg = load("bank/walletg")
+walletr  = load("bank/walletr")
+
+bank = [walletj, walletg, walletr] 
+
+members =  str(", ".join([member.key_id for member in bank]))
+line( "The members of the society are: " + members + ".")
+
+print members + " have been stuck on an island for one year." 
+
+line( "Jad, the great master of chicken, spent most of his time raising the noble birds. After one year of loneliness, Jad started feeling the necessity of intimacy with a female. He realized that he was ready to give up one of his beloved chickens for any kind of lover, even for a goat. ")
+
+line( "Giulio lives in a cave and breed goats. His day are sad, because he remember the smell of the flower that he once loved, and that he could not find in the island.")
+
+line("Rigsby devoted his time to agriculture, and his garden abounds of food and flowers. He spend most of his day lying down and smoking while he watch his garden growing. When Rigsby goes to sleep, his mind is filled with melancholy, because he misses the taste of roasted chicken.")
+
+
+line("This apparent stall will be magically resolved by the use of alcos.")
+
+jad_public_key = walletj.get_my_public_key()
+giulio_public_key = walletg.get_my_public_key()
 rigsby_public_key = walletr.get_my_public_key()
-print ""
-print "alcos created"
-print ""
-walletg.offer_alcos(new_alcos, rigsby_public_key)
+
+walletj.create_alcos("I will give a chicken to the owner of this alcos")
+walletg.create_alcos("I will give a goat to the owner of this alcos")
+walletr.create_alcos("I will give flower to the owner of this alcos")
+
+alcos_chicken = walletj.get_past()[0]
+alcos_goat = walletg.get_past()[0]
+alcos_flower = walletr.get_past()[0]
+
+def show_promises():
+    for member in bank:
+        line()
+        member.show_owed_promises()
 
 
-offer_transaction =  new_alcos.transactions[0]
-e()
-print "details about offer transaction"
-e()
-print offer_transaction.sinthesis
-e()
-print offer_transaction.sendr_signature
-print offer_transaction.receiver_signature
+line("Giulio and Jad trade their Alcos")
+
+##Jad send a chicken-alcos to Giulio
+line("jad offers a chicken-alcos to Giulio")
+walletj.offer_alcos(alcos_chicken,giulio_public_key)
+line("Giulio accept the chicken-alcos from Jad")
+walletg.accept_alcos(alcos_chicken)
+
+##Giulio send a goat alcos to jad
+line("Giulio offers a goat-alcos to Jad")
+walletg.offer_alcos(alcos_goat,jad_public_key)
+line("Jad accept the goat alcos from Giulio")
+walletj.accept_alcos(alcos_goat)
 
 
+line("new situation of the promises")
 
-##Test to receive an alcos (success)
+show_promises()
 
-print ""
-print "Before rigsby acceptinhg"
-print ""
+line("Giulio and Rigsby trade alcos")
 
-walletr.accept_alcos(new_alcos)
+##Rigsby send a flower-alcos to Giulio
+line("Rigsby offers a flower-alcos to giulio")
+walletr.offer_alcos(alcos_flower,giulio_public_key)
+line("Giulio accept the chicken-alcos from Jad")
+walletg.accept_alcos(alcos_flower)
 
-alcos_received =  walletr.get_past()[0]
+##Giulio send a chicken- alcos to rigsby
+line("Giulio offers a chicken-alcos to Rigsby")
+walletg.offer_alcos(alcos_chicken,rigsby_public_key)
+line("Rigsby accept the chicken alcos from Giulio")
+walletr.accept_alcos(alcos_chicken)
 
-print alcos_received
-alcos_received.transactions[-1].sender_signature
-alcos_received.transactions[-1].receiver_signature
-
-walletr.to_file("walletr")
-
-
+show_promises()
 
 
-
-gpg = gpg_interactive_setup()
-wallet = Wallet(gpg, "jad")
-wallet.to_file("walletj")
-"""
-
-walletr = load("walletr")
-walletg = load("walletg")
-walletj = load("walletj")
-
-##Rigsby's point of view 
-jad_public_key = walletj.get_my_public_key() 
-alcos_offered =  walletr.get_past()[0]
-walletr.offer_alcos(alcos_offered, jad_public_key)
-
-##jad's point of view
-walletj.accept_alcos(alcos_offered)
-
-print walletj.get_past()[0].get_owner_public_key()
-print walletj.get_my_public_key()
+print "And everyone lived happy ever after"
 
