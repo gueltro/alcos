@@ -3,7 +3,8 @@ import pickle
 
 ##Wrappers for pickle, used to store files in some path
 def store(obj,path):
-    pickle.dump(obj, open(path,'wb'))
+    storage_file = open(path,'wb')
+    pickle.dump(obj, storage_file) 
 
 def load(path):
     return pickle.load(open(path,"rb"))

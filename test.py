@@ -1,8 +1,9 @@
 from gpg_utils  import *
 from wallet import *
 
+
 ##Test to exchange alcos in a small community formed by Giulio, Jad, and Rigsby. 
-"""
+
 ##Wallet setup
 gpg = gpg_interactive_setup()
 walletg = Wallet(gpg, "giulio")
@@ -15,7 +16,7 @@ walletj.to_file("bank/walletj")
 gpg = gpg_interactive_setup()
 walletr = Wallet(gpg, "rigsby")
 walletr.to_file("bank/walletr")
-"""
+
 
 def line(message = ""):
     print "---"
@@ -40,7 +41,6 @@ line( "Jad, the great master of chicken, spent most of his time raising the nobl
 line( "Giulio lives in a cave and breed goats. His day are sad, because he remember the smell of the flower that he once loved, and that he could not find in the island.")
 
 line("Rigsby devoted his time to agriculture, and his garden abounds of food and flowers. He spend most of his day lying down and smoking while he watch his garden growing. When Rigsby goes to sleep, his mind is filled with melancholy, because he misses the taste of roasted chicken.")
-
 
 line("This apparent stall will be magically resolved by the use of alcos.")
 

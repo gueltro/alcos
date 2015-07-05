@@ -41,32 +41,4 @@ def verify(message, message_signature,  signer_public_key):
         print message
         return False
 
-##Utils for interactive setup. Maybe in the future this will be done with the cli-interface
-def gpg_interactive_setup():
-    print "Welcome to the interactive gpg setup! Do you want to create a new PGP key-pair, or do you want to import one?"
-    user_input = "n"
-    while (user_input != "I") and (user_input!= "N"):
-        user_input = raw_input("N = New key-pair, I = Import an existing key-pair:   ") 
- 
-    gpg = gpg_setup()      
-    if (user_input == "N"):
-        keys_interactive_setup(gpg)
-    
-    return gpg
 
-##Create a new PGP key from user input
-def keys_interactive_setup(new_gpg):
-    name_real = ""
-    while (name_real == ""):
-        name_real  = raw_input("Please insert your name (this will be used as a human readable identifier for your PGP identity):  ")
-   
-    while (name_real == ""):
-        name_real  = raw_input("Please insert your name (this will be used as a human readable identifier for your PGP identity):  ")
-
-    ##Prepare a list with all the parameter of the new PGP key
-    new_identity = {}
-    new_identity['name_real'] = name_real
-    new_identity['key_type'] = "RSA"
-    new_identity["key_length"] = "1024"
-    
-    create_gpg_keys(new_gpg, new_identity)
