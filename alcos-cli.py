@@ -28,6 +28,9 @@ if __name__ == '__main__':
 
             if arguments["create-alcos"]:
                 cli_create_alcos(arguments)
+            
+            if arguments["show_issued_promises"]:
+                cli_show_issued_promises()
 
             if arguments["show_owed_promises"]:
                 cli_show_owed_promises()

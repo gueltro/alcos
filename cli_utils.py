@@ -38,6 +38,10 @@ def cli_get_promise():
     promise = raw_input()  
     return promise
 
+def cli_show_issued_promises():
+    wallet = cli_load_wallet()
+    wallet.show_issued_promises()
+
 
 def cli_show_owed_promises():
     wallet = cli_load_wallet()
