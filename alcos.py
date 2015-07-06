@@ -38,6 +38,12 @@ class Alcos():
 
         last_transaction = self.transactions[final_transaction-1]
         return last_transaction.receiver_public_key
+
+    def get_owner_fingerprint(self, final_transaction = None):
+        owner_public_key = self.get_owner_public_key()
+        owner_fingerprint = get_gpg_fingerprint_from_public_key(owner_public_key) 
+        return fingerprint
+
     
     ##Check that all of the transaction since the creation of
     ##the alcos, up to final_transaction are correctly signed.

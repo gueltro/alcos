@@ -35,9 +35,16 @@ class Wallet():
     def get_my_private_key(self):
         return self.get_private_key(self.key_id)
 
+    def get_my_fingerprint(self, final_transaction = None): 
+        my_public_key = self.get_my_public_key()
+        owner_fingerprint = get_gpg_fingerprint_from_public_key(my_public_key)
+        return fingerprint
+	
     def import_keys_from_string(self, key_string):
         import_gpg_keys_from_string(self.gpg,key_string)
+
     
+
     ##Store alcos in face
     def add_alcos_to_past(self,alcos):
         self.face.add_alcos_to_past(alcos)

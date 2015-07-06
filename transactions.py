@@ -6,7 +6,7 @@ class Transaction():
         self.alcos_name= alcos_name
         self.sender_public_key = sender_public_key
         self.receiver_public_key = receiver_public_key
-        self.sinthesis = alcos_name + "|" + hash(sender_public_key) + "|" + hash(receiver_public_key)
+        self.sinthesis = hash(str(alcos_name) + str(sender_public_key) + str(receiver_public_key))
         self.sender_signature = None
         self.receiver_signature = None
 
