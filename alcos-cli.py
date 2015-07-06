@@ -31,6 +31,9 @@ if __name__ == '__main__':
             
             if arguments["offer"]:
                 cli_offer_alcos(arguments)
+
+            if arguments["offer"]:
+                cli_offer_alcos(arguments)
         
             if arguments["show_issued_promises"]:
                 cli_show_issued_promises()

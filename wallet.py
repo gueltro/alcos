@@ -91,6 +91,10 @@ class Wallet():
         
         alcos.offer(self.key_id, self.gpg, receiver_public_key)
 
+    def offer_alcos_to_key_id(self,alcos,key_id):
+        receiver_public_key = self.get_public_key(key_id)    
+        self.offer_alcos(alcos,receiver_public_key) 
+
     def accept_alcos(self, alcos):  
 
         past = self.get_past()

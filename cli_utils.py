@@ -8,6 +8,18 @@ def cli_get_promise():
     promise = raw_input()  
     return promise
 
+def cli_get_alcos(alcos_name):
+    ##Import the alcos to offer, either from file or from alcos name
+    if os.path.isfile(alcos):
+        alcos = load(wallet,alcos)
+    else:
+        alcos = wallet.get_alcos_from_name(alcos_name)
+
+    assert isinstance(alcos, Alcos) ,\
+        "This is not an alcos. You must supply a valid  name for the alcos or the path location of an alcos file."
+    
+    return alcos
+
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
 
@@ -38,21 +50,16 @@ def cli_create_alcos(arguments):
     print new_alcos.promise
     store(wallet,get_wallet_path())
 
-def cli_offer_alcos(arguments,alcos, receiver):
+def cli_offer_alcos(arguments,alcos_name, receiver):
     wallet = cli_load_wallet() 
-    if os.path.isfile(alcos):
-        alcos = load(wallet,alcos)
-    else:
-        alcos = wallet.get_alcos_from_name(alcos_name)
+    alcos = cli_get_alcos(alcos_name) 
+    wallet.offer_alcos_to_key_id(alcos,receiver)
 
-    assert isinstance(alcos, Alcos) ,\
-            "This is not an alcos. You must supply a valid hash name for the alcos or the path location of an alcos file."
-    
-    
-
-
+def cli_accept_alcos(arguments,alcos_name):
+    wallet = cli_load_wallet() 
+    alcos = cli_get_alcos(alcos_name) 
+    wallet.accept_alcos(alcos)
    
-    
           
 def cli_show_issued_promises():
     wallet = cli_load_wallet()

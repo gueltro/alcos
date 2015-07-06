@@ -42,7 +42,7 @@ class Alcos():
     def get_owner_fingerprint(self, final_transaction = None):
         owner_public_key = self.get_owner_public_key()
         owner_fingerprint = get_gpg_fingerprint_from_public_key(owner_public_key) 
-        return fingerprint
+        return owner_fingerprint
 
     
     ##Check that all of the transaction since the creation of
