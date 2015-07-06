@@ -52,7 +52,6 @@ class Alcos():
     def check_integrity(self, final_transaction = None):
         ##Check that the advertised creator created the alcos
         creator_public_key = self.creator_public_key
-        creator_fingerprint = get_gpg_fingerprint_from_public_key(creator_public_key)
        
         ##Hack to escape the fact that self can't be referenced in arguments, i.e
         ##def check_integrity(self, final_transaction = len(self.transactions)):
@@ -62,13 +61,13 @@ class Alcos():
         ##Hack to make sure that final_trasaction is in range 
         final_transaction = max(0, min(final_transaction,len(self.transactions)))
 
-        if verify(self.promise,self.promise_signature,creator_fingerprint):
-            return self.recursive_check(creator_fingerprint,0,final_transaction)
+        if verify(self.promise,self.promise_signature,creator_public_key):
+            return self.recursive_check(creator_public_key,0,final_transaction)
         else:
             print "The advertised owner did not create the file"
             return False
 
-    def recursive_check(self, old_owner_fingerprint, checked_transactions, final_transaction):
+    def recursive_check(self, old_owner_public_key, checked_transactions, final_transaction):
 
         ##We checked all of the transactions, and the alcos is valid
         if final_transaction == checked_transactions:
@@ -78,30 +77,34 @@ class Alcos():
         #Collect parmether of the transaction 
         this_transaction = self.transactions[checked_transactions]
         this_sinthesis = this_transaction.sinthesis 
-        this_sender_fingerprint = this_transaction.sender_fingerprint
-        this_receiver_fingerprint = this_transaction.receiver_fingerprint
+        this_sender_public_key = this_transaction.sender_public_key
+        this_receiver_public_key = this_transaction.receiver_public_key
         this_sender_signature = this_transaction.sender_signature
         this_receiver_signature = this_transaction.receiver_signature
 
-        assert this_sender_fingerprint == old_owner_fingerprint ,\
-            "Transaction " + this_transaction.sinthesis + " have an invaild sender"
+        if this_sender_public_key != old_owner_public_key:
+            print "Transaction " + this_transaction.sinthesis + " have an invaild sender"
+            return False
 
-        assert verify(this_sinthesis,this_sender_signature,this_sender_fingerprint) ,\
-                "Transaction " + this_transaction.sinthesis + " have an invaild signature from the sender"
 
-        assert verify(this_sinthesis,this_receiver_signature,this_receiver_public_key) ,\
-             "Transaction " + this_transaction.sinthesis + " have an invaild signature from the receiver"
+        if not verify(this_sinthesis,this_sender_signature,this_sender_public_key):
+            print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the sender"
+            return False
+
+        if not verify(this_sinthesis,this_receiver_signature,this_receiver_public_key):
+            print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the receiver"
+            return False
         
-        new_owner_fingerprint = this_receiver_fingeprint
-        return self.recursive_check(new_owner_fingerprint, checked_transactions + 1, final_transaction)
+        new_owner = this_receiver_public_key
+        return self.recursive_check(new_owner, checked_transactions + 1, final_transaction)
 
     ##Used to offer the alcos to someone: create a new transaction and 
     ##sign it as a sender with your private_key. At this point the
     ##transaction is incomplete, (in the sense that possible_transaction.receiver_signature == 0)
-    def offer(self, owner_id, owner_gpg, receiver_fingerprint):
+    def offer(self, owner_id, owner_gpg, receiver_public_key):
         ##Initialize new transaction
         print "create possible_transaction"
-        possible_transaction =  Transaction(self.name, self.get_owner_fingerprint(), receiver_fingerprint)
+        possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
         possible_transaction.offer_transaction(owner_id, owner_gpg) 
         ##Add it to the list of transactions 
         self.transactions.append(possible_transaction)

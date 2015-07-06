@@ -23,9 +23,11 @@ def sign(message, signer_id, signer_gpg):
     print message + " signed with my identity: " + signer_id  
     return signed_data
     
-def verify(message, message_signature,  signer_fingerprint):
+def verify(message, message_signature,  signer_public_key):
     ##Temporary gpg profile used to verify without needing an identity 
-    temp_gpg = gpg_setup("/tmp/" + str(hash(str(signer_fingerprint) + str(message))))
+    temp_gpg = gpg_setup("/tmp/" + str(hash(str(signer_public_key) + str(message))))
+    import_gpg_keys_from_string(temp_gpg,signer_public_key)
+    signer_fingerprint = temp_gpg.list_keys()[0]["fingerprint"]
 
     is_valid_signature =  temp_gpg.verify(message_signature.data)
     signature_fingerprint = is_valid_signature.fingerprint
