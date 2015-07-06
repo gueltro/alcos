@@ -18,7 +18,7 @@ class Transaction():
         self.sender_signature = sign(self.sinthesis, sender_id, sender_gpg)
 
     def accept_offered_transaction(self, receiver_id, receiver_gpg):
-        assert self.sender_signature != None. ,\
+        assert self.sender_signature != None ,\
             "Null transaction detected."
         assert verify(self.sinthesis, self.sender_signature, self.sender_fingerprint) ,\
              "This transaction was not signed correctly. Nothing happens"

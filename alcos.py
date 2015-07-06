@@ -83,13 +83,13 @@ class Alcos():
         this_sender_signature = this_transaction.sender_signature
         this_receiver_signature = this_transaction.receiver_signature
 
-        assert this_sender_fingerprint == old_owner_fingerprint:
+        assert this_sender_fingerprint == old_owner_fingerprint ,\
             "Transaction " + this_transaction.sinthesis + " have an invaild sender"
 
-        assert verify(this_sinthesis,this_sender_signature,this_sender_fingerprint).\
+        assert verify(this_sinthesis,this_sender_signature,this_sender_fingerprint) ,\
                 "Transaction " + this_transaction.sinthesis + " have an invaild signature from the sender"
 
-        assert verify(this_sinthesis,this_receiver_signature,this_receiver_public_key):
+        assert verify(this_sinthesis,this_receiver_signature,this_receiver_public_key) ,\
              "Transaction " + this_transaction.sinthesis + " have an invaild signature from the receiver"
         
         new_owner_fingerprint = this_receiver_fingeprint
