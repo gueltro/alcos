@@ -4,6 +4,10 @@ def cli_load_wallet():
     wallet = load(get_wallet_path())
     return wallet
 
+def cli_get_promise():
+    promise = raw_input()  
+    return promise
+
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
 
@@ -34,14 +38,25 @@ def cli_create_alcos(arguments):
     print new_alcos.promise
     store(wallet,get_wallet_path())
 
-def cli_get_promise():
-    promise = raw_input()  
-    return promise
+def cli_offer_alcos(arguments,alcos, receiver):
+    wallet = cli_load_wallet() 
+    if os.path.isfile(alcos):
+        alcos = load(wallet,alcos)
+    else:
+        alcos = wallet.get_alcos_from_name(alcos_name)
 
+    assert isinstance(alcos, Alcos) ,\
+            "This is not an alcos. You must supply a valid hash name for the alcos or the path location of an alcos file."
+    
+    
+
+
+   
+    
+          
 def cli_show_issued_promises():
     wallet = cli_load_wallet()
     wallet.show_issued_promises()
-
 
 def cli_show_owed_promises():
     wallet = cli_load_wallet()

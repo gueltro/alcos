@@ -118,7 +118,25 @@ class Wallet():
 
         alcos.accept(self.key_id, self.gpg)
 
+    
 
+    def get_alcos_from_name(self,alcos_name):
+        possible_alcos = [alcos for alcos in wallet.get_past() if alcos.name = alcos_name]
+        
+        alcos = None
+        
+        if len(possible_alcos) == 1:
+            alcos = possible_alcos[0]
+        
+        if len(possible_alcos) > 1:
+            print  "There are multiple alcos with name " + alcos_name
+            print   "The oldest one will be returned, but this behaviour is dangerous."
+            alcos = possible_alcos[o]
+
+        return alcos
+    
+     
+ 
     def get_issued_promises(self):
         past = self.face.past
         creator_public_key = self.get_my_public_key()
