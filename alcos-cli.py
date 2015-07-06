@@ -4,9 +4,11 @@ from cli_utils import *
 __doc__ = """ alcos-cli
 
 Usage:
-  alcos-cli.py create-alcos [-p promise] [-i promise-file] [-o output-file]
+  alcos-cli.py promise [-p promise-string] [-i promise-file] [-o output-file]
   alcos-cli.py offer <alcos>  <receiver>  [-o output-file]
   alcos-cli.py accept <alcos> 
+  alcos-cli.py export <output-file>
+  alcos-cli import <input-file>
   alcos-cli.py show_issued_promises
   alcos-cli.py show_owed_promises
 
@@ -32,9 +34,15 @@ if __name__ == '__main__':
             if arguments["offer"]:
                 cli_offer_alcos(arguments)
 
-            if arguments["offer"]:
-                cli_offer_alcos(arguments)
-        
+            if arguments["accept"]:
+                cli_accept_alcos(arguments)
+
+            if arguments["export"]:
+                cli_export_info(arguments)
+
+            if arguments["import"]:
+                cli_import_info(arguments)
+    
             if arguments["show_issued_promises"]:
                 cli_show_issued_promises()
 

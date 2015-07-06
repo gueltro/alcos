@@ -50,17 +50,38 @@ def cli_create_alcos(arguments):
     print new_alcos.promise
     store(wallet,get_wallet_path())
 
-def cli_offer_alcos(arguments,alcos_name, receiver):
+def cli_offer_alcos(arguments):
+    alcos_name = arguents["alcos"]
     wallet = cli_load_wallet() 
     alcos = cli_get_alcos(alcos_name) 
     wallet.offer_alcos_to_key_id(alcos,receiver)
 
-def cli_accept_alcos(arguments,alcos_name):
+def cli_accept_alcos(arguments):
+    alcos_name = arguents["alcos"]
     wallet = cli_load_wallet() 
     alcos = cli_get_alcos(alcos_name) 
     wallet.accept_alcos(alcos)
    
-          
+
+def cli_export_info(arguments):
+    output_file_path = arguments["output-file"]
+    wallet = cli_load_wallet()
+    store(wallet.face, output_file_path)
+
+def cli_import_info(arguments):
+    output_file_path = arguments["output-file"]
+    wallet = cli_load_wallet()
+    new_face = load(output_file_path)
+
+    assert isinstance(new_face, Face),\
+            "Imported object does not contain the information about an alcos identity"
+
+    ##Import gpg info
+    wallet.gpg.import_keys(new_face.public_key)
+
+    ##Import info from past
+    wallet.face.past += new_face.past
+
 def cli_show_issued_promises():
     wallet = cli_load_wallet()
     wallet.show_issued_promises()
