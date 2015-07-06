@@ -7,11 +7,6 @@ class Transaction():
         ##Public keys for sender and receiver
         self.sender_public_key = sender_public_key
         self.receiver_public_key = receiver_public_key
-        ##Fingerprints for sender and receiver
-        sender_fingerprint = get_gpg_fingerprint_from_public_key(sender_public_key)   
-        receiver_fingerprint = get_gpg_fingerprint_from_public_key(receiver_public_key)  
-        self.sender_fingerprint = sender_fingerprint
-        self.receiver_fingerprint = receiver_fingerprint()
         #The synthesis is built as the hash of the alcos name and the 
         self.sinthesis = hash(str(alcos_name) + str(sender_public_key) + str(receiver_public_key))
         self.sender_signature = None
@@ -23,7 +18,7 @@ class Transaction():
         self.sender_signature = sign(self.sinthesis, sender_id, sender_gpg)
 
     def accept_offered_transaction(self, receiver_id, receiver_gpg):
-        assert self.sender_signature != None. ,\
+        assert self.sender_signature != None ,\
             "Null transaction detected."
         assert verify(self.sinthesis, self.sender_signature, self.sender_public_key) ,\
              "This transaction was not signed correctly. Nothing happens"

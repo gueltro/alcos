@@ -121,7 +121,7 @@ class Wallet():
     
 
     def get_alcos_from_name(self,alcos_name):
-        possible_alcos = [alcos for alcos in wallet.get_past() if alcos.name = alcos_name]
+        possible_alcos = [alcos for alcos in wallet.get_past() if alcos.name == alcos_name]
         
         alcos = None
         

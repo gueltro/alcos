@@ -5,6 +5,7 @@ from wallet import *
 ##Test to exchange alcos in a small community formed by Giulio, Jad, and Rigsby. 
 
 ##Wallet setup
+#
 gpg = gpg_interactive_setup("giulio")
 walletg = Wallet(gpg, "giulio")
 walletg.to_file("bank/walletg")
@@ -16,6 +17,7 @@ walletj.to_file("bank/walletj")
 gpg = gpg_interactive_setup("rigsby")
 walletr = Wallet(gpg, "rigsby")
 walletr.to_file("bank/walletr")
+#
 
 def line(message = ""):
     print "---"
