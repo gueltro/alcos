@@ -9,9 +9,10 @@ def cli_get_promise():
     return promise
 
 def cli_get_alcos(alcos_name):
+    wallet = cli_load_wallet()
     ##Import the alcos to offer, either from file or from alcos name
-    if os.path.isfile(alcos):
-        alcos = load(wallet,alcos)
+    if os.path.isfile(alcos_name):
+        alcos = load(alcos_name)
     else:
         alcos = wallet.get_alcos_from_name(alcos_name)
 
@@ -19,6 +20,30 @@ def cli_get_alcos(alcos_name):
         "This is not an alcos. You must supply a valid  name for the alcos or the path location of an alcos file."
     
     return alcos
+
+##execption of leading cli rule beacuse I don't think it should be here
+def generic_show(wallet, target_object):
+    
+    ##Show a file
+    if os.path.isfile(str(target_object)):
+        generic_show(wallet,load(target_object))
+
+    ##Show a python object
+    if isinstance(target_object, Alcos):
+        target_object.pretty_print()
+
+    if isinstance(target_object, Wallet):
+        target_object.pretty_print()
+
+
+    ##get an object from hash
+    maybe_alcos = wallet.get_alcos_from_name(target_object) 
+    if isinstance(maybe_alcos, Alcos):
+        maybe_alcos.pretty_print()
+##get an alcos from past 
+    maybe_alcos = wallet.get_alcos_from_name(target_object) 
+    if isinstance(maybe_alcos, Alcos):
+        maybe_alcos.pretty_print()
 
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
@@ -51,25 +76,32 @@ def cli_create_alcos(arguments):
     store(wallet,get_wallet_path())
 
 def cli_offer_alcos(arguments):
-    alcos_name = arguents["alcos"]
+    alcos_name = arguments["<alcos>"]
+    receiver = arguments["<receiver>"]
     wallet = cli_load_wallet() 
     alcos = cli_get_alcos(alcos_name) 
     wallet.offer_alcos_to_key_id(alcos,receiver)
+    
+    ##Save the alcos to file if requested. Such a file could be used as an offer
+    output_file_path =  arguments["-o"]
+    if output_file_path != None:
+        store(alcos,output_file_path)
+    store(wallet,get_wallet_path())
 
 def cli_accept_alcos(arguments):
-    alcos_name = arguents["alcos"]
+    alcos_name = arguments["<alcos>"]
     wallet = cli_load_wallet() 
     alcos = cli_get_alcos(alcos_name) 
     wallet.accept_alcos(alcos)
-   
+    store(wallet,get_wallet_path()) 
 
 def cli_export_info(arguments):
-    output_file_path = arguments["output-file"]
+    output_file_path = arguments["<output-file>"]
     wallet = cli_load_wallet()
     store(wallet.face, output_file_path)
 
 def cli_import_info(arguments):
-    output_file_path = arguments["output-file"]
+    output_file_path = arguments["<input-file>"]
     wallet = cli_load_wallet()
     new_face = load(output_file_path)
 
@@ -78,15 +110,36 @@ def cli_import_info(arguments):
 
     ##Import gpg info
     wallet.gpg.import_keys(new_face.public_key)
-
+    
+    print "Importing " + str(len(new_face.past)) +  " new alcos. (with possible duplicates)"
     ##Import info from past
     wallet.face.past += new_face.past
 
-def cli_show_issued_promises():
+def cli_show(arguments):
+    
     wallet = cli_load_wallet()
-    wallet.show_issued_promises()
+    if arguments["issued_promises"]:
+        wallet.show_issued_alcos()
+    
+    if arguments["owed_promises"]:
+        wallet.show_owed_alcos()
 
-def cli_show_owed_promises():
-    wallet = cli_load_wallet()
-    wallet.show_owed_promises()
+    if arguments["known_promises"]:
+        wallet.show_past()
+
+    if arguments["keys"]:
+        keys_uid =  [key["uids"] for key in wallet.gpg.list_keys()]
+        print "List of the known keys"
+        for uid in keys_uid:
+            print uid[0]
+
+    if arguments["public_key"]:
+        print wallet.get_my_public_key()  
+    
+    if arguments["private_key"]:
+        print wallet.get_my_private_key()  
+
+    this_object = arguments["<object>"] 
+    if this_object != None:
+        generic_show(wallet,this_object) 
 

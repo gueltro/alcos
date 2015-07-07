@@ -8,9 +8,9 @@ Usage:
   alcos-cli.py offer <alcos>  <receiver>  [-o output-file]
   alcos-cli.py accept <alcos> 
   alcos-cli.py export <output-file>
-  alcos-cli import <input-file>
-  alcos-cli.py show_issued_promises
-  alcos-cli.py show_owed_promises
+  alcos-cli.py import <input-file>
+  alcos-cli.py show <object>
+  alcos-cli.py show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) [wallet | face] 
 
 Options:
   -h --help     Show this screen.
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
             ##Different parse based on the command
 
-            if arguments["create-alcos"]:
+            if arguments["promise"]:
                 cli_create_alcos(arguments)
             
             if arguments["offer"]:
@@ -43,11 +43,9 @@ if __name__ == '__main__':
             if arguments["import"]:
                 cli_import_info(arguments)
     
-            if arguments["show_issued_promises"]:
-                cli_show_issued_promises()
+            if arguments["show"]:
+                cli_show(arguments)
 
-            if arguments["show_owed_promises"]:
-                cli_show_owed_promises()
 
         else:
             print "You do not have a wallet right now!"

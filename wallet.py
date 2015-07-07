@@ -74,26 +74,24 @@ class Wallet():
         ##TODO add check that receiver is in my known contact
 
         if (alcos not in past):
-            print "alcos " + str(alcos) + "was added to your past"
+            if debug:
+                print "alcos " + str(alcos) + "was added to your past"
             self.add_alcos_to_past(alcos)
 
-        if (alcos_owner_public_key != wallet_owner_public_key):
-            print "This alcos is not yours. Nothing will happen"
-            return
+        assert (alcos_owner_public_key == wallet_owner_public_key) ,\
+            "This alcos is not yours. Nothing will happen"
 
-        if not alcos.check_integrity():
-            print "This alcos is corrupt. Nothing will happen." 
-            return
+        assert alcos.check_integrity() ,\
+            "This alcos is corrupt. Nothing will happen." 
 
-        if  (alcos.is_valid_offer()): 
-            print "This alcos is already being offered to someone else! Are you trying to double spend?"
-            return   
+        assert  (not alcos.is_valid_offer()) ,\
+                "This alcos is already being offered to someone else! Are you trying to double spend?"
         
         alcos.offer(self.key_id, self.gpg, receiver_public_key)
 
     def offer_alcos_to_key_id(self,alcos,key_id):
-        receiver_public_key = self.get_public_key(key_id)    
-        self.offer_alcos(alcos,receiver_public_key) 
+        receiver_public_key = self.get_public_key(key_id)
+        self.offer_alcos(alcos,receiver_public_key)
 
     def accept_alcos(self, alcos):  
 
@@ -106,11 +104,12 @@ class Wallet():
         receiver_key = last_transaction.receiver_public_key
 
 
-
+        print past
         if (alcos not in past):
             print "alcos " + str(alcos) + "was added to your past"
             self.add_alcos_to_past(alcos)
-            
+        print past
+
         assert (alcos.is_valid_offer()),\
             "This alcos is not a valid offer, nothing happens." 
         
@@ -125,7 +124,7 @@ class Wallet():
     
 
     def get_alcos_from_name(self,alcos_name):
-        possible_alcos = [alcos for alcos in wallet.get_past() if alcos.name == alcos_name]
+        possible_alcos = [alcos for alcos in self.get_past() if alcos.name == alcos_name]
         
         alcos = None
         
@@ -138,35 +137,44 @@ class Wallet():
             alcos = possible_alcos[o]
 
         return alcos
-    
-     
  
-    def get_issued_promises(self):
+    def get_issued_alcos(self):
         past = self.face.past
-        creator_public_key = self.get_my_public_key()
-        issued_promises = [alcos.promise for alcos in past if alcos.creator_public_key == creator_public_key]
-        return issued_promises 
+        my_public_key = self.get_my_public_key()
+        issued_alcos = [alcos for alcos in past if alcos.creator_public_key == my_public_key]
+        return issued_alcos 
 
-    def show_issued_promises(self):
-        print str(self.key_id) + " issued the following promises:"
-        issued_promises = self.get_issued_promises()
-        for promise in issued_promises:
-            print promise
+    def show_issued_alcos(self):
+        issued_alcos = self.get_issued_alcos()
+        for alcos in issued_alcos:
+            alcos.pretty_print()
 
-    def get_owed_promises(self):
+    def get_owed_alcos(self):
         past = self.face.past
-        issued_promises = [alcos.promise for alcos in past if alcos.get_owner_public_key() == self.get_my_public_key()]
-        return issued_promises 
+        issued_alcos = [alcos for alcos in past if alcos.get_owner_public_key() == self.get_my_public_key()]
+        return issued_alcos 
 
-    def show_owed_promises(self):
-        print str(self.key_id) +  " is owed the following promises:"
-        owed_promises = self.get_owed_promises()
-        for promise in owed_promises:
-            print promise
+    def show_owed_alcos(self):
+        owed_alcos = self.get_owed_alcos()
+        for alcos in owed_alcos:
+            alcos.pretty_print()
+           
 
     ##Get the list of all past alcos from the face
     def get_past(self):
         return self.face.past
+
+    def show_past(self):
+        past = self.get_past()
+        for alcos in past:
+            alcos.pretty_print()
+    
+    def pretty_print(self):
+        print "Wallet object"
+        print "Wallet owner: "self.key_id
+        print "The past of this wallet contains " + str(len(self.get_past())) + " alcos."   
+        print "Get more information about this wallet in the following way"
+        print "alcos-cli show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) wallet"  
 
     ##Store this alcos as a pickle file at wallet
     def to_file(self,path):

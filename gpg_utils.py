@@ -1,6 +1,8 @@
 import gnupg
 from os.path import expanduser
 
+gpg_debug = 0
+
 def gpg_setup(home = expanduser("~") + "/.alcos" ):
     gpg = gnupg.GPG(gnupghome=home)
     gpg.encoding = 'utf-8'
@@ -28,13 +30,17 @@ def verify(message, message_signature,  signer_public_key):
     temp_gpg = gpg_setup("/tmp/" + str(hash(str(signer_public_key) + str(message))))
     import_gpg_keys_from_string(temp_gpg,signer_public_key)
     signer_fingerprint = temp_gpg.list_keys()[0]["fingerprint"]
+    
+    if message_signature == None:
+        return False
 
     is_valid_signature =  temp_gpg.verify(message_signature.data)
     signature_fingerprint = is_valid_signature.fingerprint
-
+    
     if is_valid_signature and (signature_fingerprint == signer_fingerprint):
-        print "Signature for following promise was correct: "
-        print message
+        if gpg_debug:
+            print "Signature for following promise was correct: "
+            print message
         return True
     else:
         print "Signature for following promise was compromised: "
@@ -43,7 +49,13 @@ def verify(message, message_signature,  signer_public_key):
 
 def get_gpg_fingerprint_from_public_key(public_key):
     temp_gpg = gpg_setup("/tmp/" + str(hash(public_key)))
-    import_result = gpg.import_keys(public_key)
+    import_result = temp_gpg.import_keys(public_key)
     fingerprint = import_result.fingerprints
     return fingerprint
+
+def get_uid_from_public_key(public_key):
+    temp_gpg = gpg_setup("/tmp/" + str(hash(public_key)))
+    import_result = temp_gpg.import_keys(public_key)
+    uid = temp_gpg.list_keys()[0]["uids"][0] ##dark magic to change
+    return uid
 

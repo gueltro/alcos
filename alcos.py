@@ -71,7 +71,6 @@ class Alcos():
 
         ##We checked all of the transactions, and the alcos is valid
         if final_transaction == checked_transactions:
-            print "The alcos is valid"
             return True
 
         #Collect parmether of the transaction 
@@ -88,11 +87,11 @@ class Alcos():
 
 
         if not verify(this_sinthesis,this_sender_signature,this_sender_public_key):
-            print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the sender"
+            if debug:
+                print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the sender"
             return False
 
         if not verify(this_sinthesis,this_receiver_signature,this_receiver_public_key):
-            print "Transaction " + this_transaction.sinthesis + " have an invaild signature from the receiver"
             return False
         
         new_owner = this_receiver_public_key
@@ -103,7 +102,8 @@ class Alcos():
     ##transaction is incomplete, (in the sense that possible_transaction.receiver_signature == 0)
     def offer(self, owner_id, owner_gpg, receiver_public_key):
         ##Initialize new transaction
-        print "create possible_transaction"
+        if debug:
+            print "Creating possible_transaction"
         possible_transaction =  Transaction(self.name, self.get_owner_public_key(), receiver_public_key)
         possible_transaction.offer_transaction(owner_id, owner_gpg) 
         ##Add it to the list of transactions 
@@ -145,9 +145,42 @@ class Alcos():
 
         last_transaction = self.transactions[-1]
         return last_transaction.is_valid_offer()
+    
+    def pretty_print(self):
+        valid_string = "Invalid "
+        ##Collect paramether to print 
+        creator_public_key = self.creator_public_key
+        creator_id  =  get_uid_from_public_key(creator_public_key)
+        owner_public_key = self.get_owner_public_key()
+        owner_id = get_uid_from_public_key(owner_public_key)
+        receiver_public_key = "" 
+        receiver_id = ""
+        
+        is_valid = self.check_integrity()
+        is_offered = self.is_valid_offer()
+        
+        ##Decide if the alcos is valid or offered
+        if is_offered:
+            receiver_public_key = self.transactions[-1].receiver_public_key
+            receiver_id = get_uid_from_public_key(receiver_public_key)  
+        
+        if is_valid:
+            valid_string = "Valid "
+
+        ##Print all of the main info about thi alcos
+        print "" 
+        print valid_string + "Alcos " + self.name
+        print "Creator: " + creator_id 
+        print "Owner: " +  owner_id
+        if is_offered:
+            print "Offered to: " + receiver_id
+        print "Date: " + "12 - 06 - 93"
+        print ""
+        print "\t" + self.promise
+        print ""
 
     ##Store this alcos as a pickle file at path
-    def to_file(path):
+    def to_file(self,path):
         store(self, path)
     
     ##Obtain a string that can be used to represent this alcos
