@@ -23,7 +23,8 @@ class Face():
         self.past = []
 
     def get_alcos_from_name(self,alcos_name):
-        possible_alcos = [alcos for alcos in self.get_past() if alcos.name == alcos_name]
+        name_length = len(alcos_name)
+        possible_alcos = [alcos for alcos in self.get_past() if alcos.name[:name_length] == alcos_name]
         
         alcos = None
         
@@ -47,13 +48,13 @@ class Face():
         	new_transactions = alcos.transactions
             	assert old_transactions == new_transactions[:len(old_transactions)],\
                     "Duplicate alcos without common history. Alcos forking must have happened"
+                self.get_past().remove(old_alcos)
             self.past.append(alcos)
         else:
             print "The object " + str(alcos) +" is not an alcos. Nothing happens."
 
     def get_past(self):
 	    return self.past
-
 
     ##Check if all of the alcos in your transactions are valid alcos in which
     ## all the involved parties behaved honestly
