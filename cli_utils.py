@@ -5,6 +5,7 @@ def cli_load_wallet():
     return wallet
 
 def cli_get_promise():
+    print "Type the promise that you want to sign in your alcos: "
     promise = raw_input()  
     return promise
 
@@ -49,7 +50,28 @@ def generic_show(wallet, target_object):
     
     if target_object != None:
         target_object.pretty_print()
-    
+   
+
+
+
+
+##Functions connected with cli interface
+
+def cli_iou(arguments):
+    ##Append an IOU tag to the beginning of the promise
+    iou_tag = "IOU: "
+    if arguments["-p"] == None:
+        arguments["-p"] = iou_tag + cli_get_promise()
+    else:
+        arguments["-p"] =  iou_tag + arguments["-p"]
+    wallet = cli_load_wallet() 
+    cli_create_alcos(arguments)
+    ##Append the new created alcos to the arguments,
+    ##such that cli_create_alcos can consume it (hack) 
+    arguments["<alcos>"] = wallet.get_past()[-1]
+    cli_offer_alcos(arguments)
+
+
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
 
@@ -68,9 +90,8 @@ def cli_create_alcos(arguments):
 
     ##If the user did not offer a promise, parse one from command line
     if arguments["-i"] == None and arguments["-p"] == None:
-        print "Type the promise that you want to sign in your alcos: "
         promise = cli_get_promise()
-    
+
     wallet.create_alcos(promise)
     new_alcos = wallet.get_past()[-1]
     print "Created new alcos: "
@@ -84,7 +105,7 @@ def cli_offer_alcos(arguments):
     alcos_name = arguments["<alcos>"]
     receiver = arguments["<receiver>"]
     wallet = cli_load_wallet() 
-    alcos = cli_get_alcos(alcos_name) 
+    alcos = generic_object_parse(wallet,alcos_name) 
     wallet.offer_alcos_to_key_id(alcos,receiver)
     
     ##Save the alcos to file if requested. Such a file could be used as an offer
@@ -160,4 +181,5 @@ def cli_show(arguments):
     this_object = arguments["<object>"] 
     if this_object != None:
         generic_show(wallet,this_object) 
-
+    else:
+        wallet.pretty_print()

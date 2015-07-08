@@ -3,7 +3,37 @@ Make a cryptographyc promise to your friends and peers.
 
 This is a python wrapper for pgp, that allows people to make promises and sign them with their PGP keys.
 
+For example, if I want to promise to my friend steven that I will give him a beer, I can do the following: 
 
+'''
+alcos-cli iou -p "1 Beer" steven  -o beer-alcos.txt
+'''
+
+and this will create a binding contract signed with your PGP identity. Steven can accept the alcos as following:
+
+'''
+alcos accept beer-alcos.txt 
+'''
+
+'''
+Usage:
+  alcos-cli.py iou [-p promise] <receiver> [-o output_file] 
+  alcos-cli.py promise [-p promise-string] [-i promise-file] [-o output-file]
+  alcos-cli.py offer <alcos>  <receiver>  [-o output-file]
+  alcos-cli.py accept <alcos> 
+  alcos-cli.py export [<object>] <output-file>
+  alcos-cli.py import <input-file>
+  alcos-cli.py show (issued_promises | owed_promises | past | keys | public_key | private_key | <object>) 
+
+Options:
+  -h --help     Show this screen.
+  -p specify promise from a string
+  -i specify promise from an input file
+  -o output-file      
+  --quiet      print less text
+  --verbose    print more text
+"""
+'''
 
 
 -- Work in progress -- 

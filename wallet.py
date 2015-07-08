@@ -152,8 +152,8 @@ class Wallet():
         print "Wallet object"
         print "Wallet owner: " + self.key_id
         print "The past of this wallet contains " + str(len(self.get_past())) + " alcos."   
-        print "Get more information about this wallet in the following way"
-        print "alcos-cli show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) wallet"  
+        #print "Get more information about this wallet in the following way"
+        #print "alcos-cli show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) wallet"  
 
     ##Store this alcos as a pickle file at wallet
     def to_file(self,path):

@@ -4,12 +4,13 @@ from cli_utils import *
 __doc__ = """ alcos-cli
 
 Usage:
+  alcos-cli.py iou [-p promise] <receiver> [-o output_file] 
   alcos-cli.py promise [-p promise-string] [-i promise-file] [-o output-file]
   alcos-cli.py offer <alcos>  <receiver>  [-o output-file]
   alcos-cli.py accept <alcos> 
   alcos-cli.py export [<object>] <output-file>
   alcos-cli.py import <input-file>
-  alcos-cli.py show (issued_promises | owed_promises | past | keys | public_key | private_key | <object>) 
+  alcos-cli.py show [issued_promises | owed_promises | past | keys | public_key | private_key | <object>] 
 
 Options:
   -h --help     Show this screen.
@@ -24,9 +25,11 @@ Options:
 if __name__ == '__main__':
         if check_if_setup():
             arguments = docopt(__doc__)
-            print arguments
+            #print arguments
 
             ##Different parse based on the command
+            if arguments["iou"]:
+                cli_iou(arguments)
 
             if arguments["promise"]:
                 cli_create_alcos(arguments)
