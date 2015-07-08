@@ -132,6 +132,7 @@ def cli_import_info(arguments):
         print "Adding the following alcos to past"
         alcos.pretty_print()
         wallet.add_to_past(alcos)
+    store(wallet,get_wallet_path()) 
 
 def cli_show(arguments):
     wallet = cli_load_wallet()
