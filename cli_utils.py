@@ -35,9 +35,10 @@ def generic_show(wallet, target_object):
         target_object.pretty_print()
 
     ##get an object from hash
-    maybe_alcos = wallet.get_alcos_from_name(target_object) 
-    if isinstance(maybe_alcos, Alcos):
-        maybe_alcos.pretty_print()
+    if isinstance(target_object, str):
+    	maybe_alcos = wallet.get_alcos_from_name(target_object) 
+    	if isinstance(maybe_alcos, Alcos):
+        	maybe_alcos.pretty_print()
 
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
