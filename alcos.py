@@ -160,7 +160,7 @@ class Alcos():
             receiver_public_key = self.transactions[-1].receiver_public_key
             receiver_id = get_uid_from_public_key(receiver_public_key)  
         
-        if is_valid:
+        if is_valid or is_offered:
             valid_string = "Valid "
 
         ##Print all of the main info about thi alcos
