@@ -51,5 +51,3 @@ if __name__ == '__main__':
             want_new_setup = raw_input("Do you want to setup a new wallet? (Y = Yes, Everything else = No): ") 
             if want_new_setup == "Y":
                 create_wallet()
-             
-

@@ -22,7 +22,7 @@ class Face():
         self.public_key = public_key
         self.past = []
 
-     def get_alcos_from_name(self,alcos_name):
+    def get_alcos_from_name(self,alcos_name):
         possible_alcos = [alcos for alcos in self.get_past() if alcos.name == alcos_name]
         
         alcos = None
@@ -41,10 +41,11 @@ class Face():
         if isinstance(alcos,Alcos):
             ##Create a function for this situation
 	    old_alcos = self.get_alcos_from_name(alcos.name)   
-
-            old_transactions = old_alcos.transactions
-            transactions = alcos.transactions
-            assert old_transactions == new_transactions[:len(old_transactions)],\
+	    
+	    if old_alcos != None:
+	        old_transactions = old_alcos.transactions
+        	transactions = alcos.transactions
+            	assert old_transactions == new_transactions[:len(old_transactions)],\
                     "Duplicate alcos without common history. Alcos forking must have happened"
             self.past.append(alcos)
         else:
@@ -52,7 +53,6 @@ class Face():
 
     def get_past(self):
 	    return self.past
-
 
 
     ##Check if all of the alcos in your transactions are valid alcos in which
