@@ -7,9 +7,9 @@ Usage:
   alcos-cli.py promise [-p promise-string] [-i promise-file] [-o output-file]
   alcos-cli.py offer <alcos>  <receiver>  [-o output-file]
   alcos-cli.py accept <alcos> 
-  alcos-cli.py export <output-file>
+  alcos-cli.py export [<object>] <output-file>
   alcos-cli.py import <input-file>
-  alcos-cli.py show (issued_promises | owed_promises | known_promises | keys | public_key | private_key | <object>) 
+  alcos-cli.py show (issued_promises | owed_promises | past | keys | public_key | private_key | <object>) 
 
 Options:
   -h --help     Show this screen.

@@ -21,25 +21,35 @@ def cli_get_alcos(alcos_name):
     
     return alcos
 
-##execption of leading cli rule beacuse I don't think it should be here
-def generic_show(wallet, target_object):
+def generic_object_parse(wallet, target_object):
     ##Show a file
     if os.path.isfile(str(target_object)):
-        generic_show(wallet,load(target_object))
+        return generic_object_parse(wallet,load(target_object))
 
     ##Show a python object
     if isinstance(target_object, Alcos):
-        target_object.pretty_print()
+        return target_object 
 
     if isinstance(target_object, Wallet):
-        target_object.pretty_print()
+        return target_object 
+
+    if isinstance(target_object, Face):
+        return target_object
 
     ##get an object from hash
     if isinstance(target_object, str):
     	maybe_alcos = wallet.get_alcos_from_name(target_object) 
     	if isinstance(maybe_alcos, Alcos):
-        	maybe_alcos.pretty_print()
+        	return maybe_alcos
+    return None
 
+##execption of leading cli rule beacuse I don't think it should be here
+def generic_show(wallet, target_object):
+    target_object = generic_object_parse(wallet, target_object) 
+    
+    if target_object != None:
+        target_object.pretty_print()
+    
 def cli_create_alcos(arguments):
     wallet = cli_load_wallet() 
 
@@ -91,24 +101,36 @@ def cli_accept_alcos(arguments):
     store(wallet,get_wallet_path()) 
 
 def cli_export_info(arguments):
-    output_file_path = arguments["<output-file>"]
     wallet = cli_load_wallet()
-    store(wallet.face, output_file_path)
+    output_file_path = arguments["<output-file>"]
+    target_object = arguments["<object>"]
+    target_object = generic_object_parse(wallet, target_object)
+    if target_object == None:
+        ##Your wallet is the default export value
+        target_object  = wallet.face 
+
+    store(target_object, output_file_path)
+   
 
 def cli_import_info(arguments):
     output_file_path = arguments["<input-file>"]
     wallet = cli_load_wallet()
-    new_face = load(output_file_path)
 
-    assert isinstance(new_face, Face),\
-            "Imported object does not contain the information about an alcos identity"
+    target_object = load(output_file_path)
 
-    ##Import gpg info
-    wallet.gpg.import_keys(new_face.public_key)
-    
-    print "Importing " + str(len(new_face.get_past())) +  " new alcos. (with possible duplicates)"
-    ##Import info from past
-    for alcos in new_face.get_past():
+    if isinstance(target_object, Face):
+        new_face = target_object
+        ##Import gpg info
+        wallet.gpg.import_keys(new_face.public_key)
+        print "Importing " + str(len(new_face.get_past())) +  " new alcos. (with possible duplicates) from " + str(face.get_name()) 
+        ##Import info from past
+        for alcos in new_face.get_past():
+            wallet.add_to_past(alcos)
+
+    if isinstance(target_object,Alcos):
+        alcos = target_object
+        print "Adding the following alcos to past"
+        alcos.pretty_print()
         wallet.add_to_past(alcos)
 
 def cli_show(arguments):
@@ -119,7 +141,7 @@ def cli_show(arguments):
     if arguments["owed_promises"]:
         wallet.show_owed_alcos()
 
-    if arguments["known_promises"]:
+    if arguments["past"]:
         wallet.show_past()
 
     if arguments["keys"]:

@@ -116,13 +116,11 @@ class Alcos():
         ##If this alcos was never involved in any transaction, for sure it was not offered
         if transaction_length == 0:
             return False
-        
 
         if not self.check_integrity(transaction_length -1):
             print "The history of this alcos is corrupted"
             return False
         
-
         ##Is the person that is offering you the alcos 
         ##the owner of the alcos?
         if transaction_length == 1:
@@ -138,7 +136,6 @@ class Alcos():
             if not  last_receiver == last_sender:
                 return False
         
-
         last_transaction = self.transactions[-1]
         return last_transaction.is_valid_offer()
     

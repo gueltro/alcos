@@ -22,6 +22,11 @@ class Face():
         self.public_key = public_key
         self.past = []
 
+    def get_name(self):
+        public_key = self.public_key
+        name = str(get_uid_from_public_key(public_key))
+        return name
+
     def get_alcos_from_name(self,alcos_name):
         name_length = len(alcos_name)
         possible_alcos = [alcos for alcos in self.get_past() if alcos.name[:name_length] == alcos_name]
@@ -72,6 +77,13 @@ class Face():
     def is_offered():
         last_transaction = self.transactions[-1]
         return last_transaction.is_offer()
+	
+    def pretty_print(self):
+        print "Face object"
+        print "Face owner: " + self.get_name()
+        print "The past of this face contains " + str(len(self.get_past())) + " alcos."   
+	print "--Advice: Use the following to import the information for this face"
+	print "alcos-cli import <face>"
 
     ##Store this publicidentity as a pickle file at path
     def to_file(path):
