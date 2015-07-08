@@ -43,11 +43,9 @@ class Wallet():
     def import_keys_from_string(self, key_string):
         import_gpg_keys_from_string(self.gpg,key_string)
 
-    
-
     ##Store alcos in face
-    def add_alcos_to_past(self,alcos):
-        self.face.add_alcos_to_past(alcos)
+    def add_to_past(self,alcos):
+        self.face.add_to_past(alcos)
 
     ##Create a new alcos and add it to the wallet.
     def create_alcos(self,promise):
@@ -57,7 +55,7 @@ class Wallet():
         owner_public_key = self.get_my_public_key()
 
         new_alcos = Alcos(promise, promise_signature, owner_public_key)
-        self.add_alcos_to_past(new_alcos)
+        self.add_to_past(new_alcos)
 
     ##Trading utils to exchange and create alcos
 
@@ -76,7 +74,7 @@ class Wallet():
         if (alcos not in past):
             if debug:
                 print "alcos " + str(alcos) + "was added to your past"
-            self.add_alcos_to_past(alcos)
+            self.add_to_past(alcos)
 
         assert (alcos_owner_public_key == wallet_owner_public_key) ,\
             "This alcos is not yours. Nothing will happen"
@@ -103,12 +101,7 @@ class Wallet():
         sender_public_key = last_transaction.sender_public_key
         receiver_key = last_transaction.receiver_public_key
 
-
-        print past
-        if (alcos not in past):
-            print "alcos " + str(alcos) + "was added to your past"
-            self.add_alcos_to_past(alcos)
-        print past
+        self.add_to_past(alcos)
 
         assert (alcos.is_valid_offer()),\
             "This alcos is not a valid offer, nothing happens." 
@@ -124,22 +117,11 @@ class Wallet():
     
 
     def get_alcos_from_name(self,alcos_name):
-        possible_alcos = [alcos for alcos in self.get_past() if alcos.name == alcos_name]
-        
-        alcos = None
-        
-        if len(possible_alcos) == 1:
-            alcos = possible_alcos[0]
-        
-        if len(possible_alcos) > 1:
-            print  "There are multiple alcos with name " + alcos_name
-            print   "The oldest one will be returned, but this behaviour is dangerous."
-            alcos = possible_alcos[o]
-
+        alcos =  self.face.get_alcos_from_name(alcos_name)
         return alcos
- 
+
     def get_issued_alcos(self):
-        past = self.face.past
+        past = self.get_past()
         my_public_key = self.get_my_public_key()
         issued_alcos = [alcos for alcos in past if alcos.creator_public_key == my_public_key]
         return issued_alcos 
@@ -150,7 +132,7 @@ class Wallet():
             alcos.pretty_print()
 
     def get_owed_alcos(self):
-        past = self.face.past
+        past = self.get_past()
         issued_alcos = [alcos for alcos in past if alcos.get_owner_public_key() == self.get_my_public_key()]
         return issued_alcos 
 
@@ -171,7 +153,7 @@ class Wallet():
     
     def pretty_print(self):
         print "Wallet object"
-        print "Wallet owner: "self.key_id
+        print "Wallet owner: " + self.key_id
         print "The past of this wallet contains " + str(len(self.get_past())) + " alcos."   
         print "Get more information about this wallet in the following way"
         print "alcos-cli show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) wallet"  

@@ -9,8 +9,7 @@ Usage:
   alcos-cli.py accept <alcos> 
   alcos-cli.py export <output-file>
   alcos-cli.py import <input-file>
-  alcos-cli.py show <object>
-  alcos-cli.py show (issued_promises | owed_promises | known_promises | keys | public_key | private_key) [wallet | face] 
+  alcos-cli.py show (issued_promises | owed_promises | known_promises | keys | public_key | private_key | <object>) 
 
 Options:
   -h --help     Show this screen.
@@ -20,6 +19,7 @@ Options:
   --quiet      print less text
   --verbose    print more text
 """
+
 
 if __name__ == '__main__':
         if check_if_setup():
@@ -45,7 +45,6 @@ if __name__ == '__main__':
     
             if arguments["show"]:
                 cli_show(arguments)
-
 
         else:
             print "You do not have a wallet right now!"

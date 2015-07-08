@@ -23,7 +23,6 @@ def cli_get_alcos(alcos_name):
 
 ##execption of leading cli rule beacuse I don't think it should be here
 def generic_show(wallet, target_object):
-    
     ##Show a file
     if os.path.isfile(str(target_object)):
         generic_show(wallet,load(target_object))
@@ -35,12 +34,7 @@ def generic_show(wallet, target_object):
     if isinstance(target_object, Wallet):
         target_object.pretty_print()
 
-
     ##get an object from hash
-    maybe_alcos = wallet.get_alcos_from_name(target_object) 
-    if isinstance(maybe_alcos, Alcos):
-        maybe_alcos.pretty_print()
-##get an alcos from past 
     maybe_alcos = wallet.get_alcos_from_name(target_object) 
     if isinstance(maybe_alcos, Alcos):
         maybe_alcos.pretty_print()
@@ -111,12 +105,12 @@ def cli_import_info(arguments):
     ##Import gpg info
     wallet.gpg.import_keys(new_face.public_key)
     
-    print "Importing " + str(len(new_face.past)) +  " new alcos. (with possible duplicates)"
+    print "Importing " + str(len(new_face.get_past())) +  " new alcos. (with possible duplicates)"
     ##Import info from past
-    wallet.face.past += new_face.past
+    for alcos in new_face.get_past():
+        wallet.add_to_past(alcos)
 
 def cli_show(arguments):
-    
     wallet = cli_load_wallet()
     if arguments["issued_promises"]:
         wallet.show_issued_alcos()

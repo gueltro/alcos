@@ -23,16 +23,40 @@ class Face():
         self.past = []
     
     ##Insert a new contract to this public identity
-    def add_alcos_to_past(self,alcos):
+    def add_to_past(self,alcos):
         if isinstance(alcos,Alcos):
+            ##Create a function for this situation
+	    old_alcos = get_alcos_from_name(alcos.name)   
+
+            old_transactions = old_alcos.transactions
+            transactions = alcos.transactions
+            assert old_transactions == new_transactions[:len(old_transactions)],\
+                    "Duplicate alcos without common history. Alcos forking must have happened"
             self.past.append(alcos)
         else:
             print "The object " + str(alcos) +" is not an alcos. Nothing happens."
 
+    def get_past(self):
+	    return self.past
+
+    def get_alcos_from_name(self,alcos_name):
+        possible_alcos = [alcos for alcos in self.get_past() if alcos.name == alcos_name]
+        
+        alcos = None
+        
+        if len(possible_alcos) == 1:
+            alcos = possible_alcos[0]
+        
+        if len(possible_alcos) > 1:
+            print  "There are multiple alcos with name " + alcos_name
+            print   "The oldest one will be returned, but this behaviour is dangerous."
+            alcos = possible_alcos[0]
+        return alcos
+
     ##Check if all of the alcos in your transactions are valid alcos in which
     ## all the involved parties behaved honestly
     def is_face_clean(self):
-        for alcos in self.past:
+        for alcos in self.get_past():
             if not alcos.check_integrity():
                 return False
         return True
