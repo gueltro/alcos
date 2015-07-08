@@ -71,10 +71,7 @@ class Wallet():
         wallet_owner_public_key = self.get_my_public_key() 
         ##TODO add check that receiver is in my known contact
 
-        if (alcos not in past):
-            if debug:
-                print "alcos " + str(alcos) + "was added to your past"
-            self.add_to_past(alcos)
+        self.add_to_past(alcos)
 
         assert (alcos_owner_public_key == wallet_owner_public_key) ,\
             "This alcos is not yours. Nothing will happen"

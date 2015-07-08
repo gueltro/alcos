@@ -44,7 +44,7 @@ class Face():
 	    
 	    if old_alcos != None:
 	        old_transactions = old_alcos.transactions
-        	transactions = alcos.transactions
+        	new_transactions = alcos.transactions
             	assert old_transactions == new_transactions[:len(old_transactions)],\
                     "Duplicate alcos without common history. Alcos forking must have happened"
             self.past.append(alcos)
