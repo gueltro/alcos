@@ -66,6 +66,7 @@ def cli_iou(arguments):
         arguments["-p"] =  iou_tag + arguments["-p"]
     wallet = cli_load_wallet() 
     cli_create_alcos(arguments)
+    store(wallet,get_wallet_path())
     ##Append the new created alcos to the arguments,
     ##such that cli_create_alcos can consume it (hack) 
     arguments["<alcos>"] = wallet.get_past()[-1]
@@ -143,7 +144,7 @@ def cli_import_info(arguments):
         new_face = target_object
         ##Import gpg info
         wallet.gpg.import_keys(new_face.public_key)
-        print "Importing " + str(len(new_face.get_past())) +  " new alcos. (with possible duplicates) from " + str(face.get_name()) 
+        print "Importing " + str(len(new_face.get_past())) +  " new alcos. (with possible duplicates) from " + str(new_face.get_name()) 
         ##Import info from past
         for alcos in new_face.get_past():
             wallet.add_to_past(alcos)

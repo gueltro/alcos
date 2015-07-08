@@ -16,6 +16,7 @@ class Alcos():
 
     def  __init__(self, promise, promise_signature, creator_public_key):
             self.name =  hash(promise)
+            self.timestamp = get_current_time() 
             self.promise = promise
             self.promise_signature = promise_signature
             self.creator_public_key = creator_public_key
@@ -167,7 +168,7 @@ class Alcos():
         print "Owner: " +  owner_id
         if is_offered:
             print "Offered to: " + receiver_id
-        print "Date: " + "12 - 06 - 93"
+        print "Date: " + self.timestamp
         print ""
         print "\t" + self.promise
         print ""
