@@ -5,17 +5,17 @@ This is a python wrapper for pgp, that allows people to make promises and sign t
 
 For example, if I want to promise to my friend steven that I will give him a beer, I can do the following: 
 
-'''
+```
 alcos-cli iou -p "1 Beer" steven  -o beer-alcos.txt
-'''
+```
 
 and this will create a binding contract signed with your PGP identity. Steven can accept the alcos as following:
 
-'''
+```
 alcos accept beer-alcos.txt 
-'''
+```
 
-'''
+```
 Usage:
   alcos-cli.py iou [-p promise] <receiver> [-o output_file] 
   alcos-cli.py promise [-p promise-string] [-i promise-file] [-o output-file]
@@ -33,7 +33,7 @@ Options:
   --quiet      print less text
   --verbose    print more text
 """
-'''
+```
 
 
 -- Work in progress -- 
