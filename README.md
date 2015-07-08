@@ -12,7 +12,7 @@ alcos-cli iou -p "1 Beer" steven  -o beer-alcos.txt
 and this will create a binding contract signed with your PGP identity. Steven can accept the alcos as following:
 
 ```
-alcos accept beer-alcos.txt 
+alcos-cli accept beer-alcos.txt 
 ```
 
 ```
