@@ -1,5 +1,6 @@
-from wallet import *
 #Generic parser used to get an input from command line and transform it into a python object
+import os
+from wallet import *
 
 class Parser():
     

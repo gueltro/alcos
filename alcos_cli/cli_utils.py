@@ -1,3 +1,12 @@
+##Sorcery to get alcos_core (How do you do this better?)
+import sys
+import os
+def parent(path):
+    return os.path.abspath(os.path.join(path, os.pardir))
+this_folder = parent(__file__)
+parent_folder = parent(this_folder)
+alcos_core_folder =  parent_folder + "/alcos_core"
+sys.path.append(alcos_core_folder)
 from wallet import *
 from parser import *
 

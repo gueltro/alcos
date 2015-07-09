@@ -1,5 +1,4 @@
 from transactions import *
-from utils import *
 
 
 ##An alcos is a just  a cryptographic promise. The creator of the alcos 

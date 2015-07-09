@@ -1,4 +1,7 @@
-from utils import *
+##Import the utils
+import os.path
+from utils.utils import *
+#from utils import *
 
 class Transaction():
 
