@@ -36,5 +36,3 @@ class Parser():
     	if isinstance(maybe_alcos, Alcos):
             return maybe_alcos
         return None
-
-       
