@@ -1,4 +1,8 @@
 from wallet import *
+from parser import *
+
+def save(wallet):
+    store(wallet,get_wallet_path())
 
 def cli_load_wallet():
     wallet = load(get_wallet_path())
@@ -9,51 +13,12 @@ def cli_get_promise():
     promise = raw_input()  
     return promise
 
-def cli_get_alcos(alcos_name):
-    wallet = cli_load_wallet()
-    ##Import the alcos to offer, either from file or from alcos name
-    if os.path.isfile(alcos_name):
-        alcos = load(alcos_name)
-    else:
-        alcos = wallet.get_alcos_from_name(alcos_name)
-
-    assert isinstance(alcos, Alcos) ,\
-        "This is not an alcos. You must supply a valid  name for the alcos or the path location of an alcos file."
-    
-    return alcos
-
-def generic_object_parse(wallet, target_object):
-    ##Show a file
-    if os.path.isfile(str(target_object)):
-        return generic_object_parse(wallet,load(target_object))
-
-    ##Show a python object
-    if isinstance(target_object, Alcos):
-        return target_object 
-
-    if isinstance(target_object, Wallet):
-        return target_object 
-
-    if isinstance(target_object, Face):
-        return target_object
-
-    ##get an object from hash
-    if isinstance(target_object, str):
-    	maybe_alcos = wallet.get_alcos_from_name(target_object) 
-    	if isinstance(maybe_alcos, Alcos):
-        	return maybe_alcos
-    return None
-
 ##execption of leading cli rule beacuse I don't think it should be here
-def generic_show(wallet, target_object):
-    target_object = generic_object_parse(wallet, target_object) 
-    
+def generic_show(wallet, target_input):
+    parser = Parser()
+    target_object = parser.parse(wallet, target_input) 
     if target_object != None:
         target_object.pretty_print()
-   
-
-
-
 
 ##Functions connected with cli interface
 
@@ -64,11 +29,11 @@ def cli_iou(arguments):
         arguments["-p"] = iou_tag + cli_get_promise()
     else:
         arguments["-p"] =  iou_tag + arguments["-p"]
-    wallet = cli_load_wallet() 
     cli_create_alcos(arguments)
-    store(wallet,get_wallet_path())
     ##Append the new created alcos to the arguments,
     ##such that cli_create_alcos can consume it (hack) 
+
+    wallet = cli_load_wallet() 
     arguments["<alcos>"] = wallet.get_past()[-1]
     cli_offer_alcos(arguments)
 
@@ -100,35 +65,38 @@ def cli_create_alcos(arguments):
     print new_alcos.name
     print "Promise stored in the new alcos: "
     print new_alcos.promise
-    store(wallet,get_wallet_path())
+    save(wallet)
 
 def cli_offer_alcos(arguments):
     alcos_name = arguments["<alcos>"]
     receiver = arguments["<receiver>"]
     wallet = cli_load_wallet() 
-    alcos = generic_object_parse(wallet,alcos_name) 
+    parser = Parser()
+    alcos = parser.parse(wallet,alcos_name) 
     wallet.offer_alcos_to_key_id(alcos,receiver)
     
     ##Save the alcos to file if requested. Such a file could be used as an offer
     output_file_path =  arguments["-o"]
     if output_file_path != None:
         store(alcos,output_file_path)
-    store(wallet,get_wallet_path())
+    save(wallet)
 
 def cli_accept_alcos(arguments):
     alcos_name = arguments["<alcos>"]
     wallet = cli_load_wallet() 
-    alcos = cli_get_alcos(alcos_name) 
+    parser = Parser() 
+    alcos = parser.parse(alcos_name) 
     wallet.accept_alcos(alcos)
-    store(wallet,get_wallet_path()) 
+    save(wallet)
 
 def cli_export_info(arguments):
     wallet = cli_load_wallet()
     output_file_path = arguments["<output-file>"]
     target_object = arguments["<object>"]
-    target_object = generic_object_parse(wallet, target_object)
-    if target_object == None:
-        ##Your wallet is the default export value
+    parser = Parser() 
+    target_object = parser.parse(wallet, target_object)
+    if target_object is None:
+        ##Your face is the default export value
         target_object  = wallet.face 
 
     store(target_object, output_file_path)
@@ -154,33 +122,48 @@ def cli_import_info(arguments):
         print "Adding the following alcos to past"
         alcos.pretty_print()
         wallet.add_to_past(alcos)
-    store(wallet,get_wallet_path()) 
+    save(wallet)
 
 def cli_show(arguments):
     wallet = cli_load_wallet()
-    if arguments["issued_promises"]:
-        wallet.show_issued_alcos()
     
-    if arguments["owed_promises"]:
-        wallet.show_owed_alcos()
-
-    if arguments["past"]:
-        wallet.show_past()
-
-    if arguments["keys"]:
-        keys_uid =  [key["uids"] for key in wallet.gpg.list_keys()]
-        print "List of the known keys"
-        for uid in keys_uid:
-            print uid[0]
-
-    if arguments["public_key"]:
-        print wallet.get_my_public_key()  
+    ##Did the user specify what to show?
+    possible_commands = set(["past","keys","issued_promises","owed_promises"])   
     
-    if arguments["private_key"]:
-        print wallet.get_my_private_key()  
-
+    ##Check if the user supplied one of the hard-coded commands           
+    is_show_from_command = max(map(lambda command: arguments[command], possible_commands)) 
+    
+    ##Check if the user supplied an identifier for some python object
     this_object = arguments["<object>"] 
-    if this_object != None:
-        generic_show(wallet,this_object) 
-    else:
+    is_show_from_input = not (this_object is None)
+
+    if is_show_from_command:
+        if arguments["issued_promises"]:
+            wallet.show_issued_alcos()
+    
+        if arguments["owed_promises"]:
+            wallet.show_owed_alcos()
+
+        if arguments["past"]:
+            wallet.show_past()
+
+        if arguments["keys"]:
+            keys_uid =  [key["uids"] for key in wallet.gpg.list_keys()]
+            print "List of the known keys"
+            for uid in keys_uid:
+                print uid[0]
+
+        if arguments["public_key"]:
+            print wallet.get_my_public_key()  
+    
+        if arguments["private_key"]:
+            print wallet.get_my_private_key()
+    
+    if is_show_from_input:
+        generic_show(wallet, this_object)  
+
+    if (not is_show_from_command) and (not is_show_from_input):
         wallet.pretty_print()
+
+
+
